@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 using Backend.Web.Data;
+using Backend.Web.Dtos;
 using Backend.Web.Services.Interfaces;
 using FishyFlip;
 using FishyFlip.Models;
@@ -20,7 +21,7 @@ public class ProfileController(
     
     [HttpGet]
     [Authorize]
-    public async Task<Results<Ok<FeedProfile>, UnauthorizedHttpResult>> GetProfileAsync()
+    public async Task<Results<Ok<GetProfileResult>, UnauthorizedHttpResult>> GetProfileAsync()
     {
         var accessToken =  Request.Headers.Authorization.ToString().Split(" ")[1];
         var claimNameIdentifier = 
@@ -52,11 +53,26 @@ public class ProfileController(
         await protocol.AuthenticateWithPasswordSessionAsync(authSession);
         var profileResult = await protocol.Actor.GetProfileAsync(session.Did);
         var profile = profileResult.AsT0;
+
+        if (profile == null)
+        {
+            throw new Exception("Error retrieving profile");
+        }
         
         user.FishyFlipSessionEncrypted = encryptionService.Encrypt(JsonSerializer.Serialize(protocol.Session));
         await context.SaveChangesAsync();
         
-        return TypedResults.Ok(profile);
+        return TypedResults.Ok(new GetProfileResult
+        {
+            Did = profile.Did.ToString(),
+            Handle = profile.Handle,
+            DisplayName = profile.DisplayName,
+            Description = profile.Description,
+            Avatar = profile.Avatar,
+            FollowsCount = profile.FollowsCount,
+            FollowersCount = profile.FollowersCount,
+            PostsCount = profile.PostsCount,
+        });
     }
     
 }
