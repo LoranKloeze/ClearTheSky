@@ -71,7 +71,7 @@ public class ProfileController(
             Avatar = profile.Avatar,
             FollowsCount = profile.FollowsCount,
             FollowersCount = profile.FollowersCount,
-            PostsCount = profile.PostsCount,
+            PostsCount = profile.PostsCount
         });
     }
     

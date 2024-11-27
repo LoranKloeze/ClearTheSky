@@ -1,8 +1,9 @@
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace Backend.Web.Dtos;
 
 public class GetProfileResult
 {
-    public required String Did { get; set; }
+    public required string Did { get; set; }
     public required string Handle { get; set; }
     public required string DisplayName { get; set; }
     public required string Description { get; set; }
